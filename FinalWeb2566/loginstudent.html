@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>loginstudent</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@3.4.10/dist/vuetify.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@3.4.10/dist/vuetify.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <style>
+        .v-container {
+            background-color: #e3ecf0;
+        }
+        
+        #app {
+            width: 100%;
+            height: 100vh;
+            background-color: #f7dbeb;
+        }
+        
+        
+        .lavender-container {
+            background-color: #e3ecf0;
+        }
+        
+        .light-pur {
+            background-color: #e3ecf0
+        }
+        
+        .pink {
+            background-color: #dacd1f;
+        }
+        
+        .very-light {
+            background-color: rgb(225, 240, 245)
+        }
+        
+        .dark {
+            color: #ffff;
+            background-color:#6f97d3;
+        }
+
+        .title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #6f97d3; /* เพิ่มสีพื้นหลัง */
+    padding: 10px; /* เพิ่ม padding เพื่อเพิ่มระยะห่างระหว่างเนื้อหาและขอบ */
+}
+
+
+        .title-buttons {
+            display: flex;
+            align-items: center;
+        }
+
+        .title-buttons > * {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body class="lavender-container">
+
+    <div id="app">
+    
+        <v-app class="lavender-container">
+            <v-container>
+                <div class="title-container">
+                    <v-card-title class="dark">{{ title }}</v-card-title>
+
+                    <div class="title-buttons">
+                        <v-btn @click="google_login()" v-if="!user" class="pink" style="color: white; background-color: rgb(35, 51, 145); border-radius: 20px;">Login</v-btn>
+                        <v-btn @click="google_logout()" v-if="user" class="pink" style="color: white; background-color: rgb(35, 51, 145); border-radius: 20px;">Logout</v-btn>
+                    </div>
+                </div>
+
+                <v-card>
+                    <img src="./img/logo_check.PNG" style="max-width: 100%; max-height: 100% ">
+                    <v-card-text class="pa-6">
+                        <v-card-actions>
+                            <template v-if="user">
+                                <div class="pa-2">
+                                    <v-avatar><img :src="user.photoURL" /></v-avatar>
+                                </div>
+                                <div class="pa-2">
+                                    {{user.displayName}}<br />
+                                    {{user.email}}<br />
+                                </div>
+                            </template>
+                        </v-card-actions>
+                        <br/>
+                        <br/>
+                        <table width="100%">
+                            <thead></thead>
+                            <tbody></tbody>
+                        </table>
+                    </v-card-text>
+                </v-card>
+
+                <v-card v-if="editmode" class="very-light">
+                    <v-card-text class="pa-6"></v-card-text>
+
+                    <div style="display: flex; justify-content: center;">
+                        <img src="Cute/bear.jpg" style="width: 15%;" />
+                    </div>
+                    <div class="pa-6 text-center">
+                        {{footer}}
+                    </div>
+                </v-card>
+            </v-container>
+        </v-app>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBuIiJtU4bgXMDPyQVgefNZv4a3oznL95Y",
+            authDomain: "projectfinalweb2566.firebaseapp.com",
+            projectId: "projectfinalweb2566",
+            storageBucket: "projectfinalweb2566.appspot.com",
+            messagingSenderId: "618027277807",
+            appId: "1:618027277807:web:73e699a3d719603b4eaa1a",
+            measurementId: "G-6ZSF8R4FM1"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const vuetify = Vuetify.createVuetify();
+        const app = Vue.createApp({
+            data() {
+                return {
+                    title: "Login For Students",
+                    students: [],
+                    editstd: {},
+                    editmode: 0,
+                    user: null,
+                    ustudent: null,
+                };
+            },
+            mounted() {
+                firebase.auth().onAuthStateChanged((user) => {
+                    if (user) {
+                        this.user = user.toJSON();
+                    } else {
+                        this.user = null;
+                    }
+                });
+            },
+
+            methods: {
+                google_login() {
+                    // Using a popup.
+                    var provider = new firebase.auth.GoogleAuthProvider();
+                    provider.addScope("profile");
+                    provider.addScope("email");
+                    firebase.auth().signInWithPopup(provider)
+                        .then(() => {
+                            // Redirect to students.html
+                            window.location.href = "student.html";
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
+                },
+
+                google_logout() {
+                    if (confirm("Are you sure?")) {
+                        firebase.auth().signOut();
+                    }
+                },
+                getstudent(email) {
+                    db.collection("students")
+                        .where("email", "==", email)
+                        .limit(1)
+                        .get()
+                        .then(
+                            (querySnapshot) => {
+                                querySnapshot.forEach((doc) => {
+                                    this.ustudent = {
+                                        id: doc.id,
+                                        ...doc.data()
+                                    };
+                                });
+                            }
+                        );
+                }
+            }
+        });
+        app.use(vuetify).mount("#app");
+    </script>
+     
+    
+      <div id="myapp" class="container p-4"></div>
+      
+      <div id="footer" style="margin-top: 20px; text-align: center;">
+        <a href="home.html" class="dark" style="background-color: #25049c; color: #ffffff; padding: 10px 20px; border-radius: 10px; text-decoration: none; border: 1px solid #ffffff;">BACK</a>
+    </div>
+        
+</body>
+</html>
