@@ -93,8 +93,7 @@ class App extends React.Component {
       </Alert>
     );
     footer = (
-      <div>
-        By 643020638-9 รัชชานนท์ วัฒนกูล | 643020654-1 อนงค์นาถ จำนิล | 643021429-3 นางสาวมาริสา ปิ่นแก้ว | 643020623-2 นางสาวปรียาภรณ์ สอนสา<br />
+      <div style={{ textAlign: 'center' }}>
         College of Computing, Khon Kaen University
       </div>
     );
@@ -352,7 +351,7 @@ class App extends React.Component {
             <TextInput label="สกุล" app={this} value="stdlname" style={{width:120}}/>
             <TextInput label="Email" app={this} value="stdemail" style={{width:150}} />        
             <Button style={{ 
-                backgroundColor: '#25a3f7',
+                backgroundColor: 'green',
                 color: '#ffffff',
                 border: 'none',
                 borderRadius: '20px',
