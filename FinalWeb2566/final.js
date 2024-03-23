@@ -88,7 +88,7 @@ function StudentTable({data, app}) {
 
 class App extends React.Component {
     title = (
-      <Alert variant="info">
+      <Alert variant="info" style={{ textAlign: "center" }}>
         <b>SC310006 Mobile and Web Application Development </b>
       </Alert>
     );
