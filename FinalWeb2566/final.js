@@ -12,7 +12,7 @@ function StudentTable({data, app}) {
           <th>สกุล</th>
           <th>Email</th>
           <th>วันที่เช็คชื่อ</th>
-          <th>กลุ่มการเรียน</th>
+          <th>วิชา</th>
           <th>ห้อง</th>
           <th>แก้ไข</th>
           <th>ลบ</th>
@@ -87,28 +87,17 @@ function StudentTable({data, app}) {
 
 
 class App extends React.Component {
-  toggleFooterContent = () => {
-    this.setState((prevState) => ({
-      showFooterContent: !prevState.showFooterContent,
-    }));
-  };
-  toggleFooterContent2 = () => {
-    this.setState((prevState) => ({
-      showFooterContent2: !prevState.showFooterContent2,
-    }));
-  };
     title = (
-      
-      <Alert variant="info" style={{ textAlign: "center" }}>
+      <Alert variant="info">
         <b>SC310006 Mobile and Web Application Development </b>
       </Alert>
     );
-     footer = (
-      <div style={{ textAlign: 'center' }}>
-          College of Computing, Khon Kaen University
+    footer = (
+      <div>
+        By 643020638-9 รัชชานนท์ วัฒนกูล | 643020654-1 อนงค์นาถ จำนิล | 643021429-3 นางสาวมาริสา ปิ่นแก้ว | 643020623-2 นางสาวปรียาภรณ์ สอนสา<br />
+        College of Computing, Khon Kaen University
       </div>
-  );
-  
+    );
     state = {
         scene: 0,
         students:[],
@@ -209,7 +198,7 @@ class App extends React.Component {
             const currentDate = new Date().toLocaleDateString();
             // ทำการเช็คชื่อใน collection checkin
             db.collection("checkin").add({
-              subject: "2",
+              subject: "Mobile and Web Application Development",
               room: "SC9228",
               class_date: currentDate,
               id: stdCheckId
@@ -283,8 +272,7 @@ class App extends React.Component {
         // var stext = JSON.stringify(this.state.students);  
         return (
           <Card>
-             <Card.Header style={{ backgroundColor: '#fffff', color: 'info' }}>{this.title}</Card.Header>
-            
+            <Card.Header>{this.title}</Card.Header>  
             <Card.Body>
             <Button style={{ 
                 backgroundColor: '#0d8ce0',
@@ -293,7 +281,6 @@ class App extends React.Component {
                 borderRadius: '20px',
                 padding: '10px 20px',
                 margin: '20px',
-            
                 
                 
               }}  onClick={()=>this.autoRead()}>รายชื่อทั้งหมด</Button>
@@ -305,14 +292,12 @@ class App extends React.Component {
               borderRadius: '20px',
               padding: '10px 20px',
               margin: '20px',
-              marginLeft: '700px'
               
               
             }}  onClick={()=>this.autoRead2()}>ดูรายชื่อที่เช็คชื่อ</Button>
               <div>
-              
               <StudentTable data={this.state.students} app={this}/>  
-             
+        
               </div>
 
               <br/><br/>
@@ -332,7 +317,14 @@ class App extends React.Component {
               <br></br>
               <b>เพิ่มคำถามใหม่</b>
               <br></br>
-              <TextInput label="คำถาม" app={this} value="stdCheckId" style={{width:120}}/>
+              <label>
+                คำถาม :
+                <input
+                  type="text"
+                  value={this.state.newQuestion}
+                  onChange={this.handleNewQuestionChange}
+                />
+              </label>
               <button style={{ 
                 backgroundColor: '#25a3f7',
                 color: '#ffffff',
@@ -354,40 +346,18 @@ class App extends React.Component {
             </Card.Body>
 
             <Card.Footer>
-               {/* เมื่อคลิกปุ่ม "แสดง/ซ่อนข้อมูล" ให้แสดง/ซ่อนข้อมูลของ Card.Footer */}
-               <Button 
-    onClick={this.toggleFooterContent} 
-    style={{
-        backgroundColor: '#25a3f7',
-        color: 'white',
-        display: 'block',
-        margin: 'auto',
-        padding: '10px 20px',
-        fontSize: '16px',
-        width: '200px'
-    }}
->
-    {this.state.showFooterContent ? 'ซ่อนการเพิ่มข้อมูล' : 'เพิ่มรายชื่อนักศึกษา'}
-</Button>
-  {this.state.showFooterContent && (
-    <div>
-      <b>เพิ่ม/แก้ไขข้อมูล นักศึกษา </b><br/>
-      <TextInput label="รหัศนักศึกษา" app={this} value="stdid" style={{width:120}}/>  
-      <TextInput label="ชื่อ" app={this} value="stdfname" style={{width:120}}/>
-      <TextInput label="สกุล" app={this} value="stdlname" style={{width:120}}/>
-      <TextInput label="อีเมล" app={this} value="stdemail" style={{width:150}} />
-      <TextInput label="กลุ่ม" app={this} value="stdsection" style={{width:150}} /> 
-      <button style={{ 
-                backgroundColor: 'green',
+            <b>เพิ่ม/แก้ไขข้อมูล นักศึกษา :</b><br/>
+            <TextInput label="ID" app={this} value="stdid" style={{width:120}}/>  
+            <TextInput label="ชื่อ" app={this} value="stdfname" style={{width:120}}/>
+            <TextInput label="สกุล" app={this} value="stdlname" style={{width:120}}/>
+            <TextInput label="Email" app={this} value="stdemail" style={{width:150}} />        
+            <Button style={{ 
+                backgroundColor: '#25a3f7',
                 color: '#ffffff',
                 border: 'none',
                 borderRadius: '20px',
                 padding: '8px 20px',
-                margin: '20px',}}  onClick={this.addQuestionToDatabase}>บันทึก</button>        
-      
-    </div>
-  )}
-         
+                margin: '20px',}} onClick={()=>this.insertData()}>Save</Button>
             </Card.Footer>
             <Card.Footer>{this.footer}</Card.Footer>
           </Card>          
